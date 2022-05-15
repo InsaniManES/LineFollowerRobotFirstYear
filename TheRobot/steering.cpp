@@ -1,50 +1,84 @@
 #include "steering.h"
 
-int position = 0, lastError = 0, errorSum = 0;
+int lastError = 0, errorSum = 0; //variables for PID
+int rightMotorSpeed = 0, leftMotorSpeed = 0; //variables for motor speed
 
-void handleSteering(QTRSensors *s, uint16_t sv[], MotorDriver *d) {
-  position = (*s).readLineBlack(sv);
+void stopAll(Motor *m1,Motor *m2) {
+  m1->stop();
+  m2->stop();  
+}
+
+void handleSharpRight(QTRSensors *s, uint16_t sv[], Motor *m1,Motor *m2) {
+  m1->backward(TurnSpeed);
+  m2->forward(TurnSpeed);
+  int position = s->readLineBlack(sv);
+  while (position < 3000 || position > 4000) {
+    position = s->readLineBlack(sv); 
+  }
+}
+void handleSharpLeft(QTRSensors *s, uint16_t sv[], Motor *m1,Motor *m2) {
+  m1->forward(TurnSpeed);
+  m2->backward(TurnSpeed);
+  int position = s->readLineBlack(sv);
+  while (position < 3000 || position > 4000) {
+    position = s->readLineBlack(sv); 
+  }
+}
+
+//motor1 - right
+//motor2 - left
+void handleSteering(QTRSensors *s, uint16_t sv[], Motor *m1,Motor *m2) {
+  int position = s->readLineBlack(sv);
   //Serial.println(position);
   //delay(100);
   //return;
 
+  int rightState = readDigitalSensorRight();
+  int leftState = readDigitalSensorLeft();
+  if(rightState == HIGH && leftState == LOW) {
+    //handleSharpRight(s,sv,m1,m2);
+    stopAll(m1,m2);
+    position = s->readLineBlack(sv);
+  } else if(rightState == LOW && leftState == HIGH) {
+    //handleSharpLeft(s,sv,m1,m2);
+    stopAll(m1,m2);
+    position = s->readLineBlack(sv);
+  } else if(rightState == HIGH && leftState == HIGH) {
+    stopAll(m1,m2);
+    position = s->readLineBlack(sv);    
+  }
+
   if(position == 0 || position == 7000) { //handle white space
-    Serial.println("On white space");
-    return;    
-  }
-  
-  if(position>wayRight){
-    (*d).motor1->forward(speedturn);
-    (*d).motor2->backward(speedturn);
-    return;    
-  }
-  if(position<wayLeft){ 
-    (*d).motor2->forward(speedturn);
-    (*d).motor1->backward(speedturn);
+    Serial.print("On white space, continue as usual ");
+    Serial.print("(");
+    Serial.print(position);
+    Serial.print(")");
+    m1->forward(rightMotorSpeed);
+    m2->forward(leftMotorSpeed);
     return;
   }
-  
+
   int error = position - 3500; //P
-  errorSum += error; //I
-  int errorChange = error - lastError; //D
-  int motorSpeed = Kp * error + Ki * errorSum + Kd * errorChange;
+  //errorSum += error; //I
+  int deltaError = error - lastError; //D
+  int motorSpeed = Kp * error + /*Ki * errorSum +*/ Kd * deltaError;
   lastError = error;
 
-  int rightMotorSpeed = max(0,min(BaseSpeed + motorSpeed,MaxSpeed));
-  int leftMotorSpeed = min(max(BaseSpeed - motorSpeed,0),MaxSpeed);
-  
-  Serial.print("Position: ");
-  Serial.print(position);
-  Serial.print("Error: ");
-  Serial.println(error);
-  
-  Serial.print("Right: ");
-  Serial.print(rightMotorSpeed);
-  Serial.print("\t Left: ");
-  Serial.print(leftMotorSpeed);
-  Serial.print("\t Speed: ");
-  Serial.println(motorSpeed);
+  rightMotorSpeed = max(0,min(BaseSpeed1 + motorSpeed,MaxSpeed));
+  leftMotorSpeed = min(max(BaseSpeed2 - motorSpeed,0),MaxSpeed);
 
-  (*d).motor1->forward(rightMotorSpeed);
-  (*d).motor2->forward(leftMotorSpeed);
+  Serial.print("P = ");
+  Serial.print(error);
+  Serial.print(" D = ");
+  Serial.println(deltaError);
+  Serial.print(" Speed ");
+  Serial.print(motorSpeed);
+  Serial.print("rightMotorSpeed = ");
+  Serial.print(rightMotorSpeed);
+  Serial.print(" leftMotorSpeed = ");
+  Serial.print(leftMotorSpeed);
+  Serial.println();
+
+  m1->forward(rightMotorSpeed);
+  m2->forward(leftMotorSpeed);
 }

@@ -7,28 +7,36 @@
 #include "blackLineSensor.h"
 #include "steering.h"
 #include "APDS9960_Arduino.h"
-#include "APDS9960_SparkFun.h"
 
+//configuration
 const bool debugMode = true;
-const bool testMode = true;
+const bool testMode = false;
+const bool calibrateMode = true;
 
-MotorDriver driver(MotorInput1_A,MotorInput2_A,MotorInput1_B,MotorInput2_B,MotorMode);
+Motor motorRight(MotorInput1_A,MotorInput2_A);
+Motor motorLeft(MotorInput1_B,MotorInput2_B);
 QTRSensors qtr;
+
 uint16_t sensorValues[NUM_SENSORS];
 
 void setup() {
-  pinMode(LED_BUILTIN, OUTPUT);
-  
+  pinMode(LED_BUILTIN, OUTPUT);  
+
   if(debugMode) {
     Serial.begin(serialRate);
     while (!Serial); // Wait for Serial Monitor to open   
   }
 
-  setup_apds9960_arduino();
-  //setup_apds9960_sparkfun();
+  setupDigitalSensors();
+
+  setup_apds9960_arduino(); //distance and color sensor
+
+  motorRight.setup();
+  motorLeft.setup();  
   
   setupBlackLineSensor(&qtr);
-  calibrateBlackLineSensor(&qtr);
+  delay(500);
+  if(calibrateMode) calibrateBlackLineSensor(&qtr);
     
   Serial.println("All good... Program started!");
 }
@@ -41,38 +49,47 @@ void loop() {
 
   if(isCloseObject()) {
     //handle close object
-    driver.stopAll();
-    switch(readColor_apds9960_arduino()) {
-      case RED:
-        handleRed(isCloseObject);
-        break;
-      case GREEN:
-        handleGreen(isCloseObject);
-        break;
-      case BLUE:
-        handleBlue(isCloseObject); 
-        break;
-      default:
-        Serial.println("Got an error with reading color");
-        break;
-    }
+    stopAll();
+    handleColor();
   } else {
     //not close object
-    handleSteering(&qtr,sensorValues,&driver);
+    handleSteering(&qtr,sensorValues,&motorRight,&motorLeft);
   }
+}
+
+void stopAll() {
+  motorRight.stop();
+  motorLeft.stop();
 }
 
 bool isCloseObject() {
   return readProximity_apds9960_arduino() < closeObject;
 }
 
-void tests() {
-  
+void handleColor() {
+  switch(readColor_apds9960_arduino()) {
+    case RED:
+      handleRed(isCloseObject);
+      break;
+    case GREEN:
+      handleGreen(isCloseObject);
+      break;
+    case BLUE:
+      handleBlue(isCloseObject); 
+      break;
+    default:
+      Serial.println("Got an error with reading color");
+      break;
+  }
 }
 
-/*
-void motorExmaple() {
-  driver.motor1->backward(127);
-  driver.stopAll();
+void goStraight() {
+  motorRight.forward(BaseSpeed1);
+  motorLeft.forward(BaseSpeed2);
 }
-*/
+
+void tests() {
+//  goStraight();
+//  handleSteering(&qtr,sensorValues,&motorRight,&motorLeft);
+  //handleSharpLeft(&qtr,sensorValues,&motorLeft,&motorLeft);    
+}

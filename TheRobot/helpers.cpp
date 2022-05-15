@@ -1,18 +1,26 @@
 #include "helpers.h"
 #include "songs.h"
+#include "defines.h"
 
-void handleRed(bool *func()) {
-  while(func()) {
-    superMarioMelody(BUZZER,func);
-  }
+void setupDigitalSensors() {
+  pinMode(DigitalSensorRight,INPUT);
+  pinMode(DigitalSensorLeft,INPUT);
 }
-void handleGreen(bool *func()) {
-  while(func()) {
-    superMarioMelody(BUZZER,func);
-  }
+
+int readDigitalSensorRight() {
+  return digitalRead(DigitalSensorRight);
 }
-void handleBlue(bool *func()) {
-  while(func()) {
+
+int readDigitalSensorLeft() {
+  return digitalRead(DigitalSensorRight);
+}
+
+void handleRed(bool (*func)()) {
+    superMarioMelody(BUZZER,func);
+}
+void handleGreen(bool (*func)()) {
     fureliseMelody(BUZZER,func);
-  }
+}
+void handleBlue(bool (*func)()) {
+    nokiaMelody(BUZZER,func);
 }

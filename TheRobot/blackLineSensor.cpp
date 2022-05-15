@@ -1,12 +1,10 @@
 #include "blackLineSensor.h"
 
-const uint8_t sensorPins[] = {A0,A1,A2,A3,A4,A5,A6,A7};
-
 void setupBlackLineSensor(QTRSensors *qtr) {
   qtr->setTypeRC();
   qtr->setSensorPins(sensorPins, NUM_SENSORS);
   qtr->setTimeout(QTR_TIMEOUT);
-  qtr->setEmitterPin(QTR_EMITTER_PIN);  
+  //qtr->setEmitterPin(QTR_EMITTER_PIN);  
 }
 
 void calibrateBlackLineSensor(QTRSensors *qtr) {
@@ -16,12 +14,24 @@ void calibrateBlackLineSensor(QTRSensors *qtr) {
   // 2.5 ms RC read timeout (default) * 10 reads per calibrate() call
   // = ~25 ms per calibrate() call.
   // Call calibrate() 400 times to make calibration take about 10 seconds.
-  for (uint16_t i = 0; i < 400; i++) qtr->calibrate();
+  for (uint16_t i = 0; i < 250; i++) {
+    if(i%10 == 0) {
+      Serial.print((i));
+      Serial.println("% Calibrated");
+      tone(BUZZER, 1000); // Send 1KHz sound signal...
+    }
+    qtr->calibrate();
+    noTone(BUZZER);     // Stop sound...
+  }
     
   digitalWrite(LED_BUILTIN, LOW); // turn off Arduino's LED to indicate we are through with calibration
+  tone(BUZZER, 2500); // Send 1KHz sound signal...
+  delay(1000);
+  noTone(BUZZER);     // Stop sound...
+
   Serial.println("Done calibrating!");
   
-  for (int i = 0; i < NUM_SENSORS; i++) {
+  /*for (int i = 0; i < NUM_SENSORS; i++) {
     Serial.print(qtr->calibrationOn.minimum[i]);
     Serial.print(' ');
   }
@@ -34,6 +44,7 @@ void calibrateBlackLineSensor(QTRSensors *qtr) {
   }
   Serial.println();
   Serial.println();
+  */
   delay(1000);
 }
 

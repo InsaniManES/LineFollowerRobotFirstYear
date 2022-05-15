@@ -14,9 +14,11 @@ class Melody
   int divider = 0, noteDuration = 0;
 
 public:
+  Melody(int y[], int z);
   Melody(int x,int y[], int z);
   bool play(int buzzer);
   bool play(int buzzer,bool *func());
+  bool play(int buzzer,bool (*func)());
 };
 
 #endif

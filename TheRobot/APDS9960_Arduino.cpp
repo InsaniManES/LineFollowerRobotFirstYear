@@ -34,17 +34,20 @@ int readColor_apds9960_arduino() {
 }
 
 int readProximity_apds9960_arduino() {
+  int proximity;
+
   // Check if a proximity reading is available.
-  if (APDS.proximityAvailable()) {
+  while(!APDS.proximityAvailable()) delay(5);
+    
     // Read the proximity where:
     // - 0   => close
     // - 255 => far
     // - -1  => error
-    int proximity = APDS.readProximity();
+    proximity = APDS.readProximity();
 
     // Print value to the Serial Monitor.
+    Serial.print("proximity = ");
     Serial.println(proximity);
     return proximity;
-  }
-  return -1;
+
 }

@@ -640,7 +640,7 @@ int melody[] = {
   m.play(buzzer);
 }
 
-void fureliseMelody(int buzzer,bool *func()) {
+void fureliseMelody(int buzzer,bool (*func)()) {
   int melody[] = {
 
   // Fur Elise - Ludwig van Beethovem
@@ -806,7 +806,7 @@ void fureliseMelody(int buzzer,bool *func()) {
 
 }
 
-void superMarioMelody(int buzzer,bool *func()) {
+void superMarioMelody(int buzzer,bool (*func)()) {
   // notes of the moledy followed by the duration.
 // a 4 means a quarter note, 8 an eighteenth , 16 sixteenth, so on
 // !!negative numbers are used to represent dotted notes,
@@ -964,7 +964,7 @@ void gameOfThroneMelody(int buzzer,bool *func()) {
   m.play(buzzer,func);
 }
 
-void nokiaMelody(int buzzer,bool *func()) {
+void nokiaMelody(int buzzer,bool (*func)()) {
   int melody[] = {
 
   // Nokia Ringtone 

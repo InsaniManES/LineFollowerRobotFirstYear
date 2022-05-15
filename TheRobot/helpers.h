@@ -4,10 +4,16 @@
 #ifndef HELPERS_H
 #define HELPERS_H
 
-enum Colors{RED,GREEN,BLUE,ERR};
+int readDigitalSensorRight();
+int readDigitalSensorLeft();
+void setupDigitalSensors();
 
 void handleRed(bool (*func)());
 void handleGreen(bool (*func)());
 void handleBlue(bool (*func)());
+
+void handleRed(bool *func());
+void handleGreen(bool *func());
+void handleBlue(bool *func());
 
 #endif
