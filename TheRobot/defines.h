@@ -1,27 +1,27 @@
-#define Kp 0
-#define Ki 0 // experiment to determine this, slowly increase the speeds and adjust this value.
-#define Kd 0
-#define MaxSpeed 255 // max speed of the robot
-#define BaseSpeed1 150 
-#define BaseSpeed2 150
+#define Kp 0.0038 //0.0075 0.0072
+#define Ki 0
+#define Kd 0.076 //0.047 0.057
+#define MaxSpeed 200 // max speed of the robot
+#define BaseSpeed1 130 //90 
+#define BaseSpeed2 130 //90
 #define TurnSpeed 200
 
 #define NUM_SENSORS  8     // number of sensors used
 
 // for qtr8rc
-#define QTR_EMITTER_PIN 3
+#define QTR_EMITTER_PIN A0
 #define QTR_TIMEOUT 2500
 
-#define BUZZER 14
+#define BUZZER A1
 
 //motor
-#define DigitalSensorRight 5
-#define DigitalSensorLeft 6
-#define MotorMode 21
-#define MotorInput1_A 5 //Right motor input 1
-#define MotorInput2_A 6 //Right motor input 2
-#define MotorInput1_B 9 //Left motor input 1
-#define MotorInput2_B 10 //Left motor input 1
+#define DigitalSensorRight A2
+#define DigitalSensorLeft A3
+#define MotorMode A6
+#define MotorInput1_A 9 //Right motor input 1
+#define MotorInput2_A 10 //Right motor input 2
+#define MotorInput1_B 5 //Left motor input 1
+#define MotorInput2_B 6 //Left motor input 1
 #define MOTOR_MODE_STATE LOW
 
 #define closeObject 240

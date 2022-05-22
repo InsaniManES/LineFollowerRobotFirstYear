@@ -17,7 +17,7 @@ void handleSharpRight(QTRSensors *s, uint16_t sv[], Motor *m1,Motor *m2) {
   }
 }
 void handleSharpLeft(QTRSensors *s, uint16_t sv[], Motor *m1,Motor *m2) {
-  m1->forward(TurnSpeed);
+  m1->forward(0);
   m2->backward(TurnSpeed);
   int position = s->readLineBlack(sv);
   while (position < 3000 || position > 4000) {
@@ -33,26 +33,29 @@ void handleSteering(QTRSensors *s, uint16_t sv[], Motor *m1,Motor *m2) {
   //delay(100);
   //return;
 
-  int rightState = readDigitalSensorRight();
-  int leftState = readDigitalSensorLeft();
-  if(rightState == HIGH && leftState == LOW) {
-    //handleSharpRight(s,sv,m1,m2);
+  /*
+  switch(readDigitalSensorsState()) {
+    case RIGHT:
     stopAll(m1,m2);
+    delay(50);
+    handleSharpRight(s,sv,m1,m2);
     position = s->readLineBlack(sv);
-  } else if(rightState == LOW && leftState == HIGH) {
-    //handleSharpLeft(s,sv,m1,m2);
+    break;
+    case LEFT:
+    delay(50);
     stopAll(m1,m2);
+    handleSharpLeft(s,sv,m1,m2);
     position = s->readLineBlack(sv);
-  } else if(rightState == HIGH && leftState == HIGH) {
-    stopAll(m1,m2);
-    position = s->readLineBlack(sv);    
+    break;
   }
+  */
 
   if(position == 0 || position == 7000) { //handle white space
     Serial.print("On white space, continue as usual ");
     Serial.print("(");
     Serial.print(position);
     Serial.print(")");
+    Serial.println();
     m1->forward(rightMotorSpeed);
     m2->forward(leftMotorSpeed);
     return;
@@ -64,8 +67,8 @@ void handleSteering(QTRSensors *s, uint16_t sv[], Motor *m1,Motor *m2) {
   int motorSpeed = Kp * error + /*Ki * errorSum +*/ Kd * deltaError;
   lastError = error;
 
-  rightMotorSpeed = max(0,min(BaseSpeed1 + motorSpeed,MaxSpeed));
-  leftMotorSpeed = min(max(BaseSpeed2 - motorSpeed,0),MaxSpeed);
+  rightMotorSpeed = min(max(BaseSpeed1 - motorSpeed,0),MaxSpeed);
+  leftMotorSpeed = max(0,min(BaseSpeed2 + motorSpeed,MaxSpeed));
 
   Serial.print("P = ");
   Serial.print(error);

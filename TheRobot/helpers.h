@@ -4,6 +4,7 @@
 #ifndef HELPERS_H
 #define HELPERS_H
 
+int readDigitalSensorsState();
 int readDigitalSensorRight();
 int readDigitalSensorLeft();
 void setupDigitalSensors();

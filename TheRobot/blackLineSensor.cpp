@@ -4,7 +4,7 @@ void setupBlackLineSensor(QTRSensors *qtr) {
   qtr->setTypeRC();
   qtr->setSensorPins(sensorPins, NUM_SENSORS);
   qtr->setTimeout(QTR_TIMEOUT);
-  //qtr->setEmitterPin(QTR_EMITTER_PIN);  
+  qtr->setEmitterPin(QTR_EMITTER_PIN);  
 }
 
 void calibrateBlackLineSensor(QTRSensors *qtr) {
@@ -15,8 +15,8 @@ void calibrateBlackLineSensor(QTRSensors *qtr) {
   // = ~25 ms per calibrate() call.
   // Call calibrate() 400 times to make calibration take about 10 seconds.
   for (uint16_t i = 0; i < 250; i++) {
-    if(i%10 == 0) {
-      Serial.print((i));
+    if(i%25 == 0) {
+      Serial.print((i/25)*10);
       Serial.println("% Calibrated");
       tone(BUZZER, 1000); // Send 1KHz sound signal...
     }
