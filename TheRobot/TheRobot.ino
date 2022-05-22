@@ -10,7 +10,7 @@
 
 //configuration
 const bool debugMode = true;
-const bool testMode = false;
+const bool testMode = true;
 const bool calibrateMode = true;
 
 Motor motorRight(MotorInput1_A,MotorInput2_A);
@@ -90,6 +90,6 @@ void goStraight() {
 
 void tests() {
 //  goStraight();
-//  handleSteering(&qtr,sensorValues,&motorRight,&motorLeft);
+  handleSteering(&qtr,sensorValues,&motorRight,&motorLeft);
   //handleSharpLeft(&qtr,sensorValues,&motorLeft,&motorLeft);    
 }
